@@ -6,7 +6,13 @@ class Boid {
     this.acceleration = createVector();
     this.maxForce = 1;
     this.maxSpeed = 4;
-    this.color = random(10);
+    this.color = 255;  //random(255);
+    this.size = 15;
+
+    this.cohesionPerceptionRadius = 0;
+    this.separationPerceptionRadius = 0;
+    this.avoidObstaclePerceptionRadius = 100;
+    this.alignPerceptionRadius = 0;
   }
 
   edges() {
@@ -23,7 +29,6 @@ class Boid {
   }
 
   align(boids) {
-    let perceptionRadius = 50;
     let steering = createVector();
     let total = 0;
     for (let other of boids) {
@@ -33,7 +38,7 @@ class Boid {
         other.position.x,
         other.position.y
       );
-      if (other != this && distance < perceptionRadius) {
+      if (other != this && distance < this.alignPerceptionRadius) {
         steering.add(other.velocity);
         total++;
       }
@@ -49,7 +54,6 @@ class Boid {
 
  // TODO: refactor so looking at local flock code is not repeated
   cohesion(boids) {
-    let perceptionRadius = 100;
     let steering = createVector();
     let total = 0;
     for (let other of boids) {
@@ -59,7 +63,7 @@ class Boid {
         other.position.x,
         other.position.y
       );
-      if (other != this && distance < perceptionRadius) {
+      if (other != this && distance < this.cohesionPerceptionRadius) {
         steering.add(other.position);
         total++;
       }
@@ -75,7 +79,6 @@ class Boid {
   }
 
   separation(boids) {
-    let perceptionRadius = 50;
     let steering = createVector();
     let total = 0;
     for (let other of boids) {
@@ -85,7 +88,7 @@ class Boid {
         other.position.x,
         other.position.y
       );
-      if (other != this && distance < perceptionRadius) {
+      if (other != this && distance < this.separationPerceptionRadius) {
         let difference = p5.Vector.sub(this.position, other.position);
         difference.div(distance * distance);
         steering.add(difference);
@@ -102,7 +105,6 @@ class Boid {
   }
 
   avoidObstacle(obstacles) {
-    let perceptionRadius = 100;
     let steering = createVector();
     let total = 0;
     for (let obstacle of obstacles) {
@@ -112,7 +114,7 @@ class Boid {
         obstacle.position.x,
         obstacle.position.y
       );
-      if (obstacle != this && distance < perceptionRadius) {
+      if (obstacle != this && distance < this.avoidObstaclePerceptionRadius) {
         let difference = p5.Vector.sub(this.position, obstacle.position);
         difference.div(distance * distance);
         difference.normalize();
@@ -127,26 +129,6 @@ class Boid {
       steering.limit(this.maxForce);
     }
     return steering;
-  }
-
-  flockColor(boids) {
-    let perceptionRadius = 50;
-    let total = 0;
-    for (let other of boids) {
-      let distance = dist(
-        this.position.x,
-        this.position.y,
-        other.position.x,
-        other.position.y
-      );
-      if (other != this && distance < perceptionRadius) {
-        this.color += (other.color * 0.5);
-        total++;
-      }
-    }
-    if (total > 0) {
-      this.color = this.color / total;
-    }
   }
 
   flock(boids, obstacles) {
@@ -165,7 +147,6 @@ class Boid {
     this.acceleration.add(avoidAlignment);
     this.acceleration.add(cohesion);
     this.acceleration.add(separation);
-    this.flockColor(boids);
   }
 
   update() {
@@ -173,28 +154,29 @@ class Boid {
     this.velocity.add(this.acceleration);
     this.velocity.limit(this.maxSpeed);
     this.acceleration.mult(0); // reset (acceleration does not accumulate over time)
+
+    this.alignPerceptionRadius = alignPerceptionRadiusSlider.value();
+    this.cohesionPerceptionRadius = cohesionPerceptionRadiusSlider.value();
+    this.separationPerceptionRadius = separationPerceptionRadiusSlider.value();
   }
 
   show() {
-    strokeWeight(8);
-    // stroke(this.color);
-    // point(this.position.x, this.position.y);
-    drawArrow(this.position, this.velocity, color(this.color));
+    this.drawArrow(this.position, this.velocity, color(this.color));
   }
-}
 
-// ###########
 
-function drawArrow(base, vec, myColor) {
-  push();
-  stroke(myColor);
-  strokeWeight(3);
-  fill(myColor);
-  translate(base.x, base.y);
-  line(0, 0, vec.x, vec.y);
-  rotate(vec.heading());
-  let arrowSize = 7;
-  translate(vec.mag() - arrowSize, 0);
-  triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
-  pop();
+  // ###### CUT DOWN #####
+
+  drawArrow(base, vec, myColor) {
+    push();
+    // stroke(myColor);
+    strokeWeight(3);
+    fill(color(255));
+    translate(base.x, base.y);
+    line(0, 0, vec.x, vec.y);
+    rotate(vec.heading());
+    translate(vec.mag() - this.size, 0);
+    triangle(0, this.size / 2, 0, -this.size / 2, this.size, 0);
+    pop();
+  }
 }

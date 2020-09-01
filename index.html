@@ -9,8 +9,80 @@
   <script src="obstacle.js"></script>
   <script src="sketch.js"></script>
 
+  <style>
+      body {
+          margin: 0;
+          background-color: #292929;
+      }
+      * {
+        color: white;
+        font-family: Bahnschrift, "Adobe NotDef";
+      }
+      #windowWrapper {
+          width: 100%;
+          height: 100%;
+      }
+      #environmentWrapper {
+          width: 76%;
+          height: 100vh;
+          float: left;
+      }
+      #controlsWrapper {
+          width: 24%;
+          height: 100%;
+            float: right;
+      }
+      #controlsTitle {
+          width: 100%;
+          height: 50px;
+          background-color: yellow;
+      }
+      #boidInspectWrapper {
+          width: 50%;
+          height: 250px;
+          background-color: green;
+          float: left;
+      }
+      #boidPerceptionControls {
+          width: 50%;
+          height: 250px;
+          /* background-color: pink; */
+          float: right;
+      }
+      #boidPerceptionControlsInner {
+          margin-left: 15px;
+      }
+      #allControlsInner {
+        margin-left: 20px;
+        margin-top: 250px;
+        padding-top: 10px;
+      }
+      #allControls {
+          width: 100%;
+          height: 100%;
+      }
+      .sliderValueLabel {
+        margin-top: 20px;
+      }
+  </style>
+
 </head>
 
-<body></body>
+<body>
+  <div id="windowWrapper">
+      <div id="environmentWrapper"></div>
+      <div id="controlsWrapper">
+          <div id="controlsTitle"></div>
+          <div id="boidInspectWrapper"></div>
+          <div id="boidPerceptionControls">
+            <div id="boidPerceptionControlsInner"></div>
+          </div>
+          <div id="allControls">
+            <div id="allControlsInner"></div>
+          </div>
+      </div>
+  </div>
+</div>
+</body>
 
 </html>
