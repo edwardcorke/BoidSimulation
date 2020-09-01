@@ -1,4 +1,5 @@
 const flock = [];
+const obstacles = [];
 
 let alignSlider, cohesionSlider, separationSlider, maxSpeedSlider, maxForceSlider;
 
@@ -16,7 +17,8 @@ function setup() {
 }
 
 function mouseClicked() {
-  flock.push(new Boid(mouseX, mouseY));
+  // flock.push(new Boid(mouseX, mouseY));
+  obstacles.push(new Obstacle(mouseX, mouseY));
 }
 
 function draw() {
@@ -26,14 +28,16 @@ function draw() {
   fill(color(255, 204, 0));
   for (let boid of flock) {
     boid.edges();
-    boid.flock(flock);
+    boid.flock(flock, obstacles);
     boid.update();
     boid.show();
+  }
+  for (let obstacle of obstacles) {
+    obstacle.show();
   }
 }
 
 // TODO:
 //  - flock colouring
 //  - display controls
-//  - click to place new boids
 //  - add obsticles

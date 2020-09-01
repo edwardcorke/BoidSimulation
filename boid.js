@@ -6,6 +6,7 @@ class Boid {
     this.acceleration = createVector();
     this.maxForce = 1;
     this.maxSpeed = 4;
+    this.color = random(10);
   }
 
   edges() {
@@ -100,8 +101,57 @@ class Boid {
     return steering;
   }
 
-  flock(boids) {
+  avoidObstacle(obstacles) {
+    let perceptionRadius = 100;
+    let steering = createVector();
+    let total = 0;
+    for (let obstacle of obstacles) {
+      let distance = dist(
+        this.position.x,
+        this.position.y,
+        obstacle.position.x,
+        obstacle.position.y
+      );
+      if (obstacle != this && distance < perceptionRadius) {
+        let difference = p5.Vector.sub(this.position, obstacle.position);
+        difference.div(distance * distance);
+        difference.normalize();
+        steering.add(difference);
+        total++;
+      }
+    }
+    if (total > 0) {
+      steering.div(total);
+      steering.setMag(this.maxSpeed);
+      steering.sub(this.velocity);
+      steering.limit(this.maxForce);
+    }
+    return steering;
+  }
+
+  flockColor(boids) {
+    let perceptionRadius = 50;
+    let total = 0;
+    for (let other of boids) {
+      let distance = dist(
+        this.position.x,
+        this.position.y,
+        other.position.x,
+        other.position.y
+      );
+      if (other != this && distance < perceptionRadius) {
+        this.color += (other.color * 0.5);
+        total++;
+      }
+    }
+    if (total > 0) {
+      this.color = this.color / total;
+    }
+  }
+
+  flock(boids, obstacles) {
     let alignment = this.align(boids);
+    let avoidAlignment = this.avoidObstacle(obstacles);
     let cohesion = this.cohesion(boids);
     let separation = this.separation(boids);
 
@@ -112,8 +162,10 @@ class Boid {
     this.maxForce = maxForceSlider.value();
 
     this.acceleration.add(alignment);
+    this.acceleration.add(avoidAlignment);
     this.acceleration.add(cohesion);
     this.acceleration.add(separation);
+    this.flockColor(boids);
   }
 
   update() {
@@ -125,9 +177,9 @@ class Boid {
 
   show() {
     strokeWeight(8);
-    stroke(255);
+    // stroke(this.color);
     // point(this.position.x, this.position.y);
-    drawArrow(this.position, this.velocity, 'white')
+    drawArrow(this.position, this.velocity, color(this.color));
   }
 }
 
