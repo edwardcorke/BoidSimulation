@@ -11,8 +11,12 @@ function setup() {
   maxForceSlider = createSlider(0.1, 4, 1, 0.1);
 
   for (let i = 0; i < 100; i++) {
-    flock.push(new Boid());
+    flock.push(new Boid(random(width), random(height)));
   }
+}
+
+function mouseClicked() {
+  flock.push(new Boid(mouseX, mouseY));
 }
 
 function draw() {
@@ -27,3 +31,9 @@ function draw() {
     boid.show();
   }
 }
+
+// TODO:
+//  - flock colouring
+//  - display controls
+//  - click to place new boids
+//  - add obsticles
