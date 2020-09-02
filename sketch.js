@@ -8,15 +8,20 @@ const defaultSeparationPerceptionRadius = 50;
 let alignSlider, cohesionSlider, separationSlider, noiseSlider, maxSpeedSlider, maxForceSlider, alignPerceptionRadiusSlider, cohesionPerceptionRadiusSlider, separationPerceptionRadiusSlider;
 
 function setup() {
-  // Create evironment canvas
-  let environmentWrapperWidth = document.getElementById("environmentWrapper").offsetWidth;
-  let environmentWrapperHeight = document.getElementById("environmentWrapper").offsetHeight;
-  environment = createCanvas(environmentWrapperWidth, environmentWrapperHeight);
-  environment.parent('environmentWrapper');
-  environment.mouseClicked(mouseClickedOnEvironment);
-
   // Create control sliders
   createControlSliders();
+
+  // Create canvas for inspect boid parameters
+  new p5(boidInspect);
+
+  // Create evironment canvas (resize once inserted into environmentWrapper (expands))
+  environment = createCanvas(1,1);
+  environment.parent('environmentWrapper');
+  let environmentWrapperWidth = document.getElementById("environmentWrapper").offsetWidth;
+  let controlsWrapperHeight = document.getElementById("controlsWrapper").offsetHeight;
+  resizeCanvas(environmentWrapperWidth, controlsWrapperHeight);
+  environment.mouseClicked(mouseClickedOnEvironment);
+
   // Create boids and add to flock
   for (let i = 0; i < 50; i++) {
     flock.push(new Boid(random(width), random(height)));
@@ -25,8 +30,10 @@ function setup() {
   for (let i = 0; i < 6; i++) {
     obstacles.push(new Obstacle(random(width), random(height)));
   }
-  // Create canvas for inspect boid parameters
-  new p5(boidInspect);
+}
+
+function windowResized() {
+  resizeCanvas(document.getElementById("environmentWrapper").offsetWidth, document.getElementById("controlsWrapper").offsetHeight);
 }
 
 function mouseClickedOnEvironment() {
