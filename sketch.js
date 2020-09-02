@@ -35,6 +35,10 @@ function setup() {
     flock.push(new Boid(random(width), random(height)));
   }
 
+  for (let i = 0; i < 5; i++) {
+    obstacles.push(new Obstacle(random(width), random(height)));
+  }
+
   new p5(boidInspect);
 }
 
