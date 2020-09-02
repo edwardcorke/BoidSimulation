@@ -7,87 +7,7 @@
   <script src="boid.js"></script>
   <script src="obstacle.js"></script>
   <script src="sketch.js"></script>
-
-  <style>
-      body {
-          margin: 0;
-          background-color: #292929;
-      }
-      * {
-        color: white;
-        font-family: Bahnschrift, "Adobe NotDef";
-      }
-      h1 {
-        color: #292929;
-      }
-      #windowWrapper {
-          width: 100%;
-          height: 100%;
-      }
-      #environmentWrapper {
-          width: 76%;
-          height: 100vh;
-          float: left;
-      }
-      #controlsWrapper {
-          width: 24%;
-          height: 100%;
-          float: right;
-          position: relative;
-          z-index: 2;
-          -webkit-box-shadow: -14px 0px 21px 2px rgba(0,0,0,0.17);
-          -moz-box-shadow: -14px 0px 21px 2px rgba(0,0,0,0.17);
-          box-shadow: -14px 0px 21px 2px rgba(0,0,0,0.17);
-      }
-      #controlsTitle {
-          width: inherit;
-          height: 10px;
-          background-color: #FFD119;
-          display: table-cell;
-          vertical-align: middle;
-          text-align: center;
-      }
-      #boidInspectWrapper {
-          width: 45%;
-          height: 225px;
-          float: left;
-      }
-      #boidPerceptionControls {
-          width: 55%;
-          height: 225px;
-          float: right;
-      }
-      #boidPerceptionControlsInner {
-          margin-left: 15px;
-          margin-right: 15px;
-      }
-      #allControlsInner {
-        margin-left: 20px;
-        margin-right: 20px;
-        margin-top: 230px;
-        padding-top: 10px;
-      }
-      #allControls {
-          width: 100%;
-          height: 100%;
-      }
-      .sliderValueLabel {
-        margin-top: 30px;
-      }
-      #placementTypeSelect {
-        margin-top: 35px;
-        margin-bottom: 20px;
-      }
-      button {
-        color: #292929;
-        cursor: pointer;
-      }
-      #credit {
-          margin-top: 110px;
-          margin-bottom: 20px;
-      }
-  </style>
-
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -108,13 +28,15 @@
                 <input type="Radio" name="placementType" id="placementB" value="Obstacle" checked>
                   <label for="placementB">Obstacle</label>
               </div>
-              <button onclick="clearObstacles()">Clear Obstacles</button>
+              <button onclick="clearObstacles()">Clear Obstacles</button><br><br>
+              Boid Colour: <input type="color" id="boidColorPicker" onchange="updateBoidColor();" value="#FFFFFF">
+              <br><br><br>
+
               <div id="credit">Created by Edward Corke&copy;	- <a href="https://github.com/edwardcorke?tab=projects" target="_blank">GitHub</a></div>
             </div>
           </div>
       </div>
   </div>
-</div>
 </body>
 
 </html>

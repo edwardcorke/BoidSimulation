@@ -6,7 +6,7 @@ class Boid {
     this.acceleration = createVector();
     this.maxForce = 1;
     this.maxSpeed = 4;
-    this.color = 255;  //random(255);
+    this.color = "#FFFFFF";//random(255);
     this.size = 15;
 
     this.cohesionPerceptionRadius = 0;
@@ -16,6 +16,7 @@ class Boid {
   }
 
   edges() {
+    // Infinity edge effect
     if (this.position.x > width) {
       this.position.x = 0;
     } else if (this.position.x < 0) {
@@ -28,20 +29,29 @@ class Boid {
     }
   }
 
-  align(boids) {
-    let steering = createVector();
-    let total = 0;
-    for (let other of boids) {
+  getLocalFlock(objects, perceptionRadius) {
+    let localFlock = [];
+    for (let other of objects) {
       let distance = dist(
         this.position.x,
         this.position.y,
         other.position.x,
         other.position.y
       );
-      if (other != this && distance < this.alignPerceptionRadius) {
-        steering.add(other.velocity);
-        total++;
+      if (other != this && distance < perceptionRadius) {
+        localFlock.push(other);
       }
+    }
+    return localFlock;
+  }
+
+  align(boids) {
+    let steering = createVector();
+    let total = 0;
+    // Operate in local flock
+    for (let neighbour of this.getLocalFlock(boids, this.alignPerceptionRadius)) {
+      steering.add(neighbour.velocity);
+      total++;
     }
     if (total > 0) {
       steering.div(total);
@@ -52,21 +62,13 @@ class Boid {
     return steering;
   }
 
- // TODO: refactor so looking at local flock code is not repeated
   cohesion(boids) {
     let steering = createVector();
     let total = 0;
-    for (let other of boids) {
-      let distance = dist(
-        this.position.x,
-        this.position.y,
-        other.position.x,
-        other.position.y
-      );
-      if (other != this && distance < this.cohesionPerceptionRadius) {
-        steering.add(other.position);
-        total++;
-      }
+    // Operate in local flock
+    for (let neighbour of this.getLocalFlock(boids, this.cohesionPerceptionRadius)) {
+      steering.add(neighbour.position);
+      total++;
     }
     if (total > 0) {
       steering.div(total);
@@ -81,19 +83,13 @@ class Boid {
   separation(boids) {
     let steering = createVector();
     let total = 0;
-    for (let other of boids) {
-      let distance = dist(
-        this.position.x,
-        this.position.y,
-        other.position.x,
-        other.position.y
-      );
-      if (other != this && distance < this.separationPerceptionRadius) {
-        let difference = p5.Vector.sub(this.position, other.position);
-        difference.div(distance * distance);
-        steering.add(difference);
-        total++;
-      }
+    // Operate in local flock
+    for (let neighbour of this.getLocalFlock(boids, this.separationPerceptionRadius)) {
+      let difference = p5.Vector.sub(this.position, neighbour.position);
+      let distance = dist(this.position.x, this.position.y, neighbour.position.x, neighbour.position.y);
+      difference.div(distance * distance);
+      steering.add(difference);
+      total++;
     }
     if (total > 0) {
       steering.div(total);
@@ -107,21 +103,15 @@ class Boid {
   avoidObstacle(obstacles) {
     let steering = createVector();
     let total = 0;
-    for (let obstacle of obstacles) {
-      let distance = dist(
-        this.position.x,
-        this.position.y,
-        obstacle.position.x,
-        obstacle.position.y
-      );
-      if (obstacle != this && distance < this.avoidObstaclePerceptionRadius) {
+    // Operate in local flock
+    for (let obstacle of this.getLocalFlock(obstacles, this.avoidObstaclePerceptionRadius)) {
         let difference = p5.Vector.sub(this.position, obstacle.position);
+        let distance = dist(this.position.x, this.position.y, obstacle.position.x, obstacle.position.y);
         difference.div(distance * distance);
         difference.normalize();
         steering.add(difference);
         total++;
       }
-    }
     if (total > 0) {
       steering.div(total);
       steering.setMag(this.maxSpeed);
@@ -161,22 +151,24 @@ class Boid {
   }
 
   show() {
-    this.drawArrow(this.position, this.velocity, color(this.color));
+    this.drawBoidArrow(this.position, this.velocity, color(this.color));
+  }
+
+  setColor(newColor) {
+    this.color = newColor;
   }
 
 
   // ###### CUT DOWN #####
 
-  drawArrow(base, vec, myColor) {
-    push();
-    // stroke(myColor);
-    strokeWeight(3);
-    fill(color(255));
+  drawBoidArrow(base, vec, myColor) {
+    push(); //save current drawings
+    fill(myColor);
     translate(base.x, base.y);
     line(0, 0, vec.x, vec.y);
     rotate(vec.heading());
     translate(vec.mag() - this.size, 0);
     triangle(0, this.size / 2, 0, -this.size / 2, this.size, 0);
-    pop();
+    pop(); //restore current drawings
   }
 }

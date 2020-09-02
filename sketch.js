@@ -1,16 +1,88 @@
 let flock = [];
 let obstacles = [];
 
+// Sliders
 let alignSlider, cohesionSlider, separationSlider, maxSpeedSlider, maxForceSlider, alignPerceptionRadiusSlider, cohesionPerceptionRadiusSlider, separationPerceptionRadiusSlider;
 
 function setup() {
-
+  // Create evironment canvas
   let environmentWrapperWidth = document.getElementById("environmentWrapper").offsetWidth;
   let environmentWrapperHeight = document.getElementById("environmentWrapper").offsetHeight;
   environment = createCanvas(environmentWrapperWidth, environmentWrapperHeight);
   environment.parent('environmentWrapper')
 
+  // Create control sliders
+  createControlSliders();
+  // Create boids and add to flock
+  for (let i = 0; i < 50; i++) {
+    flock.push(new Boid(random(width), random(height)));
+  }
+  // Create randomly placed obstacles
+  for (let i = 0; i < 5; i++) {
+    obstacles.push(new Obstacle(random(width), random(height)));
+  }
+  // Create canvas for inspect boid parameters
+  new p5(boidInspect);
+}
 
+function mouseClicked() {
+  // Find what to place (checkbox)
+  if (document.getElementById("placementA").checked == true) {
+    flock.push(new Boid(mouseX, mouseY));
+  }
+  if (document.getElementById("placementB").checked == true) {
+    obstacles.push(new Obstacle(mouseX, mouseY));
+  }
+}
+
+function updateBoidColor() {
+  for (let boid of flock) {
+    boid.setColor(document.getElementById("boidColorPicker").value);
+  }
+}
+
+function draw() {
+  background(50);
+  // background()
+  noStroke();
+  // Update each boid
+  for (let boid of flock) {
+    boid.edges();
+    boid.flock(flock, obstacles);
+    boid.update();
+    boid.show();
+  }
+  // Update each obstacle
+  for (let obstacle of obstacles) {
+    obstacle.show();
+  }
+  // Update slider labels
+  updateControlSliderLabels();
+}
+
+function clearObstacles() {
+  obstacles = [];
+}
+
+var boidInspect = function(sketch) {
+  sketch.setup = function() {
+    //create boid inspect canvas
+    let boidInspectWrapperWidth = document.getElementById("boidInspectWrapper").offsetWidth;
+    let boidInspectWrapperHeight = document.getElementById("boidInspectWrapper").offsetHeight;
+    let boidInspectCanvas = sketch.createCanvas(boidInspectWrapperWidth, boidInspectWrapperHeight);
+    boidInspectCanvas.parent('boidInspectWrapper');
+
+    // Crate labels for boid inspect
+    createBoidInspectSliders();
+  }
+  sketch.draw = function() {
+    sketch.background(48);
+    updateBoidInspectLabels(flock[0], sketch);
+
+  }
+}
+
+function createControlSliders() {
   let sliderWidth = document.getElementById("allControlsInnerSliders").offsetWidth + "px";
   let marginTop = "0px";
 
@@ -28,109 +100,50 @@ function setup() {
 
   maxForceValueLabel= createDiv("Max Force: ").parent("allControlsInnerSliders").addClass("sliderValueLabel");
   maxForceSlider = createSlider(0.1, 4, 1.1, 0.1).parent("allControlsInnerSliders").style('width', sliderWidth).style("margin-top", marginTop);
-
-
-
-  for (let i = 0; i < 50; i++) {
-    flock.push(new Boid(random(width), random(height)));
-  }
-
-  for (let i = 0; i < 5; i++) {
-    obstacles.push(new Obstacle(random(width), random(height)));
-  }
-
-  new p5(boidInspect);
 }
 
-function mouseClicked() {
-  if (document.getElementById("placementA").checked == true) {
-    flock.push(new Boid(mouseX, mouseY));
-  }
-  if (document.getElementById("placementB").checked == true) {
-    obstacles.push(new Obstacle(mouseX, mouseY));
-  }
-}
+function updateControlSliderLabels() {
+  if (alignSlider.value() == 0) { alignmentValueLabel.html("Alignment: OFF");
+  } else { alignmentValueLabel.html("Alignment: " + alignSlider.value()); }
 
-function draw() {
-  background(51);
-  noStroke();
-  for (let boid of flock) {
-    boid.edges();
-    boid.flock(flock, obstacles);
-    boid.update();
-    boid.show();
-  }
-  for (let obstacle of obstacles) {
-    obstacle.show();
-  }
+  if (cohesionSlider.value() == 0) { cohesionValueLabel.html("Cohesion: OFF");
+  } else { cohesionValueLabel.html("Cohesion: " + cohesionSlider.value()); }
 
-  if (alignSlider.value() == 0) {
-    alignmentValueLabel.html("Alignment: OFF");
-  } else {
-    alignmentValueLabel.html("Alignment: " + alignSlider.value());
-  }
-
-  if (cohesionSlider.value() == 0) {
-    cohesionValueLabel.html("Cohesion: OFF");
-  } else {
-    cohesionValueLabel.html("Cohesion: " + cohesionSlider.value());
-  }
-
-  if (separationSlider.value() == 0) {
-    separationValueLabel.html("Separation: OFF");
-  } else {
-    separationValueLabel.html("Separation: " + separationSlider.value());
-  }
+  if (separationSlider.value() == 0) { separationValueLabel.html("Separation: OFF");
+  } else { separationValueLabel.html("Separation: " + separationSlider.value()); }
 
   maxSpeedValueLabel.html("Max Speed: " + maxSpeedSlider.value());
 
   maxForceValueLabel.html("Max Force: " + maxForceSlider.value());
 }
 
-function clearObstacles() {
-  obstacles = [];
+function createBoidInspectSliders() {
+  sliderWidth = document.getElementById("boidPerceptionControlsInner").offsetWidth + "px";
+
+  alignPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
+  alignPerceptionRadiusSlider = createSlider(10, 200, 80, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
+
+  cohesionPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
+  cohesionPerceptionRadiusSlider = createSlider(10, 200, 90, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
+
+  separationPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
+  separationPerceptionRadiusSlider = createSlider(10, 200, 50, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
 }
 
-var boidInspect = function(sketch) {
-  sketch.setup = function() {
-    let boidInspectWrapperWidth = document.getElementById("boidInspectWrapper").offsetWidth;
-    let boidInspectWrapperHeight = document.getElementById("boidInspectWrapper").offsetHeight;
+function updateBoidInspectLabels(selectedBoid, sketch) {
+  sketch.fill(color(255, 212, 38));
+  sketch.ellipse(sketch.width/2, sketch.height/2, flock[0].alignPerceptionRadius, flock[0].alignPerceptionRadius);
+  alignPerceptionValueLabel.html("Align Perception: " + selectedBoid.alignPerceptionRadius + "px");
 
-    let boidInspectCanvas = sketch.createCanvas(boidInspectWrapperWidth, boidInspectWrapperHeight);
-    boidInspectCanvas.parent('boidInspectWrapper');
+  sketch.fill(color(200,204,0,126));
+  sketch.ellipse(sketch.width/2, sketch.height/2, selectedBoid.cohesionPerceptionRadius, selectedBoid.cohesionPerceptionRadius);
+  cohesionPerceptionValueLabel.html("Cohesion Perception: " + selectedBoid.cohesionPerceptionRadius + "px");
 
-    sliderWidth = document.getElementById("boidPerceptionControlsInner").offsetWidth + "px";
+  sketch.fill(color(255,226,110,126));
+  sketch.ellipse(sketch.width/2, sketch.height/2, selectedBoid.separationPerceptionRadius, selectedBoid.separationPerceptionRadius);
+  separationPerceptionValueLabel.html("Separation Perception: " + selectedBoid.separationPerceptionRadius + "px");
 
-    alignPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
-    alignPerceptionRadiusSlider = createSlider(10, 200, 80, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
-
-    cohesionPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
-    cohesionPerceptionRadiusSlider = createSlider(10, 200, 90, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
-
-    separationPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
-    separationPerceptionRadiusSlider = createSlider(10, 200, 50, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
-
-  }
-  sketch.draw = function() {
-    sketch.background(48);
-    selectedBoid = flock[0];
-
-
-    sketch.fill(color(255, 212, 38));
-    sketch.ellipse(sketch.width/2, sketch.height/2, flock[0].alignPerceptionRadius, flock[0].alignPerceptionRadius);
-    alignPerceptionValueLabel.html("Align Perception: " + flock[0].alignPerceptionRadius + "px");
-
-    sketch.fill(color(200,204,0,126));
-    sketch.ellipse(sketch.width/2, sketch.height/2, flock[0].cohesionPerceptionRadius, flock[0].cohesionPerceptionRadius);
-    cohesionPerceptionValueLabel.html("Cohesion Perception: " + flock[0].cohesionPerceptionRadius + "px");
-
-    sketch.fill(color(255,226,110,126));
-    sketch.ellipse(sketch.width/2, sketch.height/2, flock[0].separationPerceptionRadius, flock[0].separationPerceptionRadius);
-    separationPerceptionValueLabel.html("Separation Perception: " + flock[0].separationPerceptionRadius + "px");
-
-    sketch.fill(255);
-    let size = flock[0].size / 2;
-    sketch.triangle((sketch.width/2)-size, sketch.height/2, (sketch.width/2)+size, (sketch.height/2)+size, (sketch.width/2)+size, (sketch.height/2)-size);
-
-  }
+  sketch.fill(selectedBoid.color);
+  let size = selectedBoid.size / 2;
+  sketch.triangle((sketch.width/2)-size, sketch.height/2, (sketch.width/2)+size, (sketch.height/2)+size, (sketch.width/2)+size, (sketch.height/2)-size);
 }
