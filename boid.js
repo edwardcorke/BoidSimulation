@@ -4,15 +4,16 @@ class Boid {
     this.velocity = p5.Vector.random2D();
     this.velocity.setMag(random(2, 4))
     this.acceleration = createVector();
+    this.noise = createVector(0,0);
     this.maxForce = 1;
     this.maxSpeed = 4;
-    this.color = "#FFFFFF";//random(255);
+    this.color = "#FFFFFF";
     this.size = 15;
 
-    this.cohesionPerceptionRadius = 0;
-    this.separationPerceptionRadius = 0;
+    this.alignPerceptionRadius = defaultAlignPerceptionRadius;
+    this.cohesionPerceptionRadius = defaultCohesionPerceptionRadius;
+    this.separationPerceptionRadius = defaultSeparationPerceptionRadius;
     this.avoidObstaclePerceptionRadius = 100;
-    this.alignPerceptionRadius = 0;
   }
 
   edges() {
@@ -143,11 +144,21 @@ class Boid {
     this.position.add(this.velocity);
     this.velocity.add(this.acceleration);
     this.velocity.limit(this.maxSpeed);
+
+    this.updateNoise();
+    this.velocity.add(this.noise);
+
     this.acceleration.mult(0); // reset (acceleration does not accumulate over time)
 
     this.alignPerceptionRadius = alignPerceptionRadiusSlider.value();
     this.cohesionPerceptionRadius = cohesionPerceptionRadiusSlider.value();
     this.separationPerceptionRadius = separationPerceptionRadiusSlider.value();
+  }
+
+  updateNoise() {
+    this.noise = createVector(random(noiseSlider.value()) - (noiseSlider.value()/2),
+                              random(noiseSlider.value()) - (noiseSlider.value()/2)
+                              );
   }
 
   show() {

@@ -61,7 +61,7 @@ h1 {
     height: 100%;
 }
 .sliderValueLabel {
-  margin-top: 30px;
+  margin-top: 20px;
 }
 #placementTypeSelect {
   margin-top: 35px;
@@ -72,7 +72,7 @@ button {
   cursor: pointer;
 }
 #credit {
-    margin-top: 50px;
+    margin-top: 5px;
     margin-bottom: 20px;
 }
 

@@ -14,7 +14,7 @@
   <div id="windowWrapper">
       <div id="environmentWrapper"></div>
       <div id="controlsWrapper">
-          <div id="controlsTitle"><h1>Boid's Flocking Algorithm</h1></div>
+          <div id="controlsTitle"><h1>Boids Flocking Algorithm</h1></div>
           <div id="boidInspectWrapper"></div>
           <div id="boidPerceptionControls">
             <div id="boidPerceptionControlsInner"></div>
@@ -28,11 +28,13 @@
                 <input type="Radio" name="placementType" id="placementB" value="Obstacle" checked>
                   <label for="placementB">Obstacle</label>
               </div>
-              <button onclick="clearObstacles()">Clear Obstacles</button><br><br>
+              <button onclick="clearObstacles()">Clear Obstacles</button> | <button onclick="clearBoids()">Clear Boids</button><br><br>
               Boid Colour: <input type="color" id="boidColorPicker" onchange="updateBoidColor();" value="#FFFFFF">
               <br><br><br>
-
-              <div id="credit">Created by Edward Corke&copy;	- <a href="https://github.com/edwardcorke?tab=projects" target="_blank">GitHub</a></div>
+              <div id="credit">
+                <a href="https://dl.acm.org/doi/10.1145/37401.37406" target="_blank">Boids Paper</a><br><br>
+                Created by Edward Corke&copy;	- <a href="https://github.com/edwardcorke?tab=projects" target="_blank">GitHub</a>
+              </div>
             </div>
           </div>
       </div>

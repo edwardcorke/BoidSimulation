@@ -1,15 +1,19 @@
 let flock = [];
 let obstacles = [];
 
+const defaultAlignPerceptionRadius = 80;
+const defaultCohesionPerceptionRadius = 90;
+const defaultSeparationPerceptionRadius = 50;
 // Sliders
-let alignSlider, cohesionSlider, separationSlider, maxSpeedSlider, maxForceSlider, alignPerceptionRadiusSlider, cohesionPerceptionRadiusSlider, separationPerceptionRadiusSlider;
+let alignSlider, cohesionSlider, separationSlider, noiseSlider, maxSpeedSlider, maxForceSlider, alignPerceptionRadiusSlider, cohesionPerceptionRadiusSlider, separationPerceptionRadiusSlider;
 
 function setup() {
   // Create evironment canvas
   let environmentWrapperWidth = document.getElementById("environmentWrapper").offsetWidth;
   let environmentWrapperHeight = document.getElementById("environmentWrapper").offsetHeight;
   environment = createCanvas(environmentWrapperWidth, environmentWrapperHeight);
-  environment.parent('environmentWrapper')
+  environment.parent('environmentWrapper');
+  environment.mouseClicked(mouseClickedOnEvironment);
 
   // Create control sliders
   createControlSliders();
@@ -18,14 +22,14 @@ function setup() {
     flock.push(new Boid(random(width), random(height)));
   }
   // Create randomly placed obstacles
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 6; i++) {
     obstacles.push(new Obstacle(random(width), random(height)));
   }
   // Create canvas for inspect boid parameters
   new p5(boidInspect);
 }
 
-function mouseClicked() {
+function mouseClickedOnEvironment() {
   // Find what to place (checkbox)
   if (document.getElementById("placementA").checked == true) {
     flock.push(new Boid(mouseX, mouseY));
@@ -64,6 +68,10 @@ function clearObstacles() {
   obstacles = [];
 }
 
+function clearBoids() {
+  flock = [];
+}
+
 var boidInspect = function(sketch) {
   sketch.setup = function() {
     //create boid inspect canvas
@@ -95,6 +103,9 @@ function createControlSliders() {
   separationValueLabel= createDiv("Separation: ").parent("allControlsInnerSliders").addClass("sliderValueLabel");
   separationSlider = createSlider(0, 2, 1.1, 0.1).parent("allControlsInnerSliders").style('width', sliderWidth).style("margin-top", marginTop);
 
+  noiseValueLabel= createDiv("Noise: ").parent("allControlsInnerSliders").addClass("sliderValueLabel");
+  noiseSlider = createSlider(0, 1.5, 0.25  , 0.25).parent("allControlsInnerSliders").style('width', sliderWidth).style("margin-top", marginTop);
+
   maxSpeedValueLabel= createDiv("Max Speed: ").parent("allControlsInnerSliders").addClass("sliderValueLabel");
   maxSpeedSlider = createSlider(2.5, 12, 6, 0.5).parent("allControlsInnerSliders").style('width', sliderWidth).style("margin-top", marginTop);
 
@@ -112,6 +123,9 @@ function updateControlSliderLabels() {
   if (separationSlider.value() == 0) { separationValueLabel.html("Separation: OFF");
   } else { separationValueLabel.html("Separation: " + separationSlider.value()); }
 
+  if (noiseSlider.value() == 0) { noiseValueLabel.html("Noise: OFF");
+} else { noiseValueLabel.html("Noise: " + noiseSlider.value()); }
+
   maxSpeedValueLabel.html("Max Speed: " + maxSpeedSlider.value());
 
   maxForceValueLabel.html("Max Force: " + maxForceSlider.value());
@@ -121,18 +135,22 @@ function createBoidInspectSliders() {
   sliderWidth = document.getElementById("boidPerceptionControlsInner").offsetWidth + "px";
 
   alignPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
-  alignPerceptionRadiusSlider = createSlider(10, 200, 80, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
+  alignPerceptionRadiusSlider = createSlider(10, 200, defaultAlignPerceptionRadius, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
 
   cohesionPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
-  cohesionPerceptionRadiusSlider = createSlider(10, 200, 90, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
+  cohesionPerceptionRadiusSlider = createSlider(10, 200, defaultCohesionPerceptionRadius, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
 
   separationPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
-  separationPerceptionRadiusSlider = createSlider(10, 200, 50, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
+  separationPerceptionRadiusSlider = createSlider(10, 200, defaultSeparationPerceptionRadius, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
 }
 
 function updateBoidInspectLabels(selectedBoid, sketch) {
+  if (selectedBoid == null) {
+    // New Boid won't appear because it is not added to the flock array
+    selectedBoid = new Boid(0,0);
+  }
   sketch.fill(color(255, 212, 38));
-  sketch.ellipse(sketch.width/2, sketch.height/2, flock[0].alignPerceptionRadius, flock[0].alignPerceptionRadius);
+  sketch.ellipse(sketch.width/2, sketch.height/2, selectedBoid.alignPerceptionRadius, selectedBoid.alignPerceptionRadius);
   alignPerceptionValueLabel.html("Align Perception: " + selectedBoid.alignPerceptionRadius + "px");
 
   sketch.fill(color(200,204,0,126));
