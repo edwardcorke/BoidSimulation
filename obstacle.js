@@ -5,7 +5,7 @@ class Obstacle {
 
   show() {
     strokeWeight(20);
-    stroke("red");
+    stroke(color(255, 209, 25));
     point(this.position.x, this.position.y);
   }
 }

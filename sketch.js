@@ -1,5 +1,5 @@
-const flock = [];
-const obstacles = [];
+let flock = [];
+let obstacles = [];
 
 let alignSlider, cohesionSlider, separationSlider, maxSpeedSlider, maxForceSlider, alignPerceptionRadiusSlider, cohesionPerceptionRadiusSlider, separationPerceptionRadiusSlider;
 
@@ -11,22 +11,27 @@ function setup() {
   environment.parent('environmentWrapper')
 
 
-  let sliderWidth = "300px";
+  let sliderWidth = document.getElementById("allControlsInnerSliders").offsetWidth + "px";
   let marginTop = "0px";
-  createP("Alignment").parent("allControlsInner");
-  alignSlider = createSlider(0, 2, 1, 0.1).parent("allControlsInner").style('width', sliderWidth).style("margin-top", marginTop);
-  createP("Cohesion").parent("allControlsInner");
-  cohesionSlider = createSlider(0, 2, 1, 0.1).parent("allControlsInner").style('width', sliderWidth).style("margin-top", marginTop);
-  createP("Separation").parent("allControlsInner");
-  separationSlider = createSlider(0, 2, 1, 0.1).parent("allControlsInner").style('width', sliderWidth).style("margin-top", marginTop);
-  createP("Max Speed").parent("allControlsInner");
-  maxSpeedSlider = createSlider(0.1, 8, 4, 0.1).parent("allControlsInner").style('width', sliderWidth).style("margin-top", marginTop);
-  createP("Max Force").parent("allControlsInner");
-  maxForceSlider = createSlider(0.1, 4, 1, 0.1).parent("allControlsInner").style('width', sliderWidth).style("margin-top", marginTop);
+
+  alignmentValueLabel= createDiv("Alignment: ").parent("allControlsInnerSliders").addClass("sliderValueLabel");
+  alignSlider = createSlider(0, 2, 1, 0.1).parent("allControlsInnerSliders").style('width', sliderWidth).style("margin-top", marginTop);
+
+  cohesionValueLabel= createDiv("Cohesion: ").parent("allControlsInnerSliders").addClass("sliderValueLabel");
+  cohesionSlider = createSlider(0, 2, 0.8, 0.1).parent("allControlsInnerSliders").style('width', sliderWidth).style("margin-top", marginTop);
+
+  separationValueLabel= createDiv("Separation: ").parent("allControlsInnerSliders").addClass("sliderValueLabel");
+  separationSlider = createSlider(0, 2, 1.1, 0.1).parent("allControlsInnerSliders").style('width', sliderWidth).style("margin-top", marginTop);
+
+  maxSpeedValueLabel= createDiv("Max Speed: ").parent("allControlsInnerSliders").addClass("sliderValueLabel");
+  maxSpeedSlider = createSlider(2.5, 12, 6, 0.5).parent("allControlsInnerSliders").style('width', sliderWidth).style("margin-top", marginTop);
+
+  maxForceValueLabel= createDiv("Max Force: ").parent("allControlsInnerSliders").addClass("sliderValueLabel");
+  maxForceSlider = createSlider(0.1, 4, 1.1, 0.1).parent("allControlsInnerSliders").style('width', sliderWidth).style("margin-top", marginTop);
 
 
 
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 50; i++) {
     flock.push(new Boid(random(width), random(height)));
   }
 
@@ -34,15 +39,17 @@ function setup() {
 }
 
 function mouseClicked() {
-  // flock.push(new Boid(mouseX, mouseY));
-  obstacles.push(new Obstacle(mouseX, mouseY));
+  if (document.getElementById("placementA").checked == true) {
+    flock.push(new Boid(mouseX, mouseY));
+  }
+  if (document.getElementById("placementB").checked == true) {
+    obstacles.push(new Obstacle(mouseX, mouseY));
+  }
 }
 
 function draw() {
   background(51);
   noStroke();
-  ellipse(flock[0].position.x, flock[0].position.y, flock[0].alignPerceptionRadius, flock[0].alignPerceptionRadius)
-  fill(color(255, 204, 0));
   for (let boid of flock) {
     boid.edges();
     boid.flock(flock, obstacles);
@@ -52,6 +59,32 @@ function draw() {
   for (let obstacle of obstacles) {
     obstacle.show();
   }
+
+  if (alignSlider.value() == 0) {
+    alignmentValueLabel.html("Alignment: OFF");
+  } else {
+    alignmentValueLabel.html("Alignment: " + alignSlider.value());
+  }
+
+  if (cohesionSlider.value() == 0) {
+    cohesionValueLabel.html("Cohesion: OFF");
+  } else {
+    cohesionValueLabel.html("Cohesion: " + cohesionSlider.value());
+  }
+
+  if (separationSlider.value() == 0) {
+    separationValueLabel.html("Separation: OFF");
+  } else {
+    separationValueLabel.html("Separation: " + separationSlider.value());
+  }
+
+  maxSpeedValueLabel.html("Max Speed: " + maxSpeedSlider.value());
+
+  maxForceValueLabel.html("Max Force: " + maxForceSlider.value());
+}
+
+function clearObstacles() {
+  obstacles = [];
 }
 
 var boidInspect = function(sketch) {
@@ -62,35 +95,34 @@ var boidInspect = function(sketch) {
     let boidInspectCanvas = sketch.createCanvas(boidInspectWrapperWidth, boidInspectWrapperHeight);
     boidInspectCanvas.parent('boidInspectWrapper');
 
-    // createP("Align Perception").parent("boidPerceptionControlsInner");
-    alignValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
-    alignPerceptionRadiusSlider = createSlider(10, 250, 50, 10).parent('boidPerceptionControlsInner');
+    sliderWidth = document.getElementById("boidPerceptionControlsInner").offsetWidth + "px";
 
-    // createP("Cohesion Perception").parent("boidPerceptionControlsInner");
-    cohesionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
-    cohesionPerceptionRadiusSlider = createSlider(10, 250, 100, 10).parent('boidPerceptionControlsInner');
+    alignPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
+    alignPerceptionRadiusSlider = createSlider(10, 200, 80, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
 
-    // createP("Separation Perception").parent("boidPerceptionControlsInner");
-    separationValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
-    separationPerceptionRadiusSlider = createSlider(10, 250, 50, 10).parent('boidPerceptionControlsInner');
+    cohesionPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
+    cohesionPerceptionRadiusSlider = createSlider(10, 200, 90, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
+
+    separationPerceptionValueLabel = createDiv("").parent("boidPerceptionControlsInner").addClass("sliderValueLabel");
+    separationPerceptionRadiusSlider = createSlider(10, 200, 50, 10).parent('boidPerceptionControlsInner').style('width', sliderWidth);
 
   }
   sketch.draw = function() {
     sketch.background(48);
-    selectedBoid = flock[0]; //random(flock.length)
+    selectedBoid = flock[0];
 
 
-    sketch.fill(color(150));
+    sketch.fill(color(255, 212, 38));
     sketch.ellipse(sketch.width/2, sketch.height/2, flock[0].alignPerceptionRadius, flock[0].alignPerceptionRadius);
-    alignValueLabel.html("Align Perception: " + flock[0].alignPerceptionRadius + "px");
+    alignPerceptionValueLabel.html("Align Perception: " + flock[0].alignPerceptionRadius + "px");
 
-    sketch.fill(color(200,200,200,126));
+    sketch.fill(color(200,204,0,126));
     sketch.ellipse(sketch.width/2, sketch.height/2, flock[0].cohesionPerceptionRadius, flock[0].cohesionPerceptionRadius);
-    cohesionValueLabel.html("Cohesion Perception: " + flock[0].cohesionPerceptionRadius + "px");
+    cohesionPerceptionValueLabel.html("Cohesion Perception: " + flock[0].cohesionPerceptionRadius + "px");
 
-    sketch.fill(color(255,255,255,126));
+    sketch.fill(color(255,226,110,126));
     sketch.ellipse(sketch.width/2, sketch.height/2, flock[0].separationPerceptionRadius, flock[0].separationPerceptionRadius);
-    separationValueLabel.html("Separation Perception: " + flock[0].separationPerceptionRadius + "px");
+    separationPerceptionValueLabel.html("Separation Perception: " + flock[0].separationPerceptionRadius + "px");
 
     sketch.fill(255);
     let size = flock[0].size / 2;
@@ -98,11 +130,3 @@ var boidInspect = function(sketch) {
 
   }
 }
-
-// // TODO: remove repeat
-
-
-// TODO:
-//  - flock colouring
-//  - display controls
-//  - add obsticles

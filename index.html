@@ -18,6 +18,9 @@
         color: white;
         font-family: Bahnschrift, "Adobe NotDef";
       }
+      h1 {
+        color: #292929;
+      }
       #windowWrapper {
           width: 100%;
           height: 100%;
@@ -30,31 +33,35 @@
       #controlsWrapper {
           width: 24%;
           height: 100%;
-            float: right;
+          float: right;
       }
       #controlsTitle {
-          width: 100%;
-          height: 50px;
-          background-color: yellow;
+          width: inherit;
+          height: 10px;
+          background-color: #FFD119;
+          display: table-cell;
+          vertical-align: middle;
+          text-align: center;
       }
       #boidInspectWrapper {
-          width: 50%;
-          height: 250px;
-          background-color: green;
+          width: 45%;
+          height: 225px;
           float: left;
       }
       #boidPerceptionControls {
-          width: 50%;
-          height: 250px;
+          width: 55%;
+          height: 225px;
           /* background-color: pink; */
           float: right;
       }
       #boidPerceptionControlsInner {
           margin-left: 15px;
+          margin-right: 15px;
       }
       #allControlsInner {
         margin-left: 20px;
-        margin-top: 250px;
+        margin-right: 20px;
+        margin-top: 230px;
         padding-top: 10px;
       }
       #allControls {
@@ -62,7 +69,18 @@
           height: 100%;
       }
       .sliderValueLabel {
-        margin-top: 20px;
+        margin-top: 30px;
+      }
+      #placementTypeSelect {
+        margin-top: 35px;
+        margin-bottom: 20px;
+      }
+      button {
+        color: #292929;
+        cursor: pointer;
+      }
+      #credit {
+          margin-top: 100px;
       }
   </style>
 
@@ -72,13 +90,23 @@
   <div id="windowWrapper">
       <div id="environmentWrapper"></div>
       <div id="controlsWrapper">
-          <div id="controlsTitle"></div>
+          <div id="controlsTitle"><h1>Boid's Flocking Algorithm</h1></div>
           <div id="boidInspectWrapper"></div>
           <div id="boidPerceptionControls">
             <div id="boidPerceptionControlsInner"></div>
           </div>
           <div id="allControls">
-            <div id="allControlsInner"></div>
+            <div id="allControlsInner">
+              <div id="allControlsInnerSliders"></div>
+              <div id="placementTypeSelect">Click to place: <br><br>
+                <input type="Radio" name="placementType" id="placementA" value="Boid">
+                  <lable for="placementA">Boid</label><br>
+                <input type="Radio" name="placementType" id="placementB" value="Obstacle" checked>
+                  <label for="placementB">Obstacle</label>
+              </div>
+              <button onclick="clearObstacles()">Clear Obstacles</button>
+              <div id="credit">Created by Edward Corke&copy;	- <a href="https://github.com/edwardcorke?tab=projects" target="_blank">GitHub</a></div>
+            </div>
           </div>
       </div>
   </div>
