@@ -2,22 +2,32 @@ body {
     margin: 0;
     background-color: #292929;
 }
+
 * {
   color: white;
   font-family: Bahnschrift, "Adobe NotDef";
 }
+
 h1 {
   color: #292929;
 }
+
+button {
+  color: #292929;
+  cursor: pointer;
+}
+
 #windowWrapper {
   position: relative;
     width: 100%;
 }
+
 #environmentWrapper {
     width: 76%;
     height: 100vh;
     float: left;
 }
+
 #controlsWrapper {
     width: 24%;
     height: 100%;
@@ -28,6 +38,7 @@ h1 {
     -moz-box-shadow: -14px 0px 21px 2px rgba(0,0,0,0.17);
     box-shadow: -14px 0px 21px 2px rgba(0,0,0,0.17);
 }
+
 #controlsTitle {
     width: inherit;
     height: 10px;
@@ -36,56 +47,61 @@ h1 {
     vertical-align: middle;
     text-align: center;
 }
+
 #boidInspectWrapper {
     width: 45%;
     height: 225px;
     float: left;
 }
+
 #boidPerceptionControls {
     width: 55%;
     height: 225px;
     float: right;
 }
+
 #boidPerceptionControlsInner {
     margin-left: 15px;
     margin-right: 15px;
 }
+
 #allControlsInner {
   margin-left: 20px;
   margin-right: 20px;
   margin-top: 210px;
   padding-top: 10px;
 }
+
 #allControls {
     width: 100%;
     height: 100%;
 }
+
 .sliderValueLabel {
   margin-top: 20px;
 }
+
 #placementTypeSelect {
   margin-top: 35px;
   margin-bottom: 20px;
 }
-button {
-  color: #292929;
-  cursor: pointer;
+
+#boidColorPicker {
+  -webkit-appearance: none;
+  border: none;
+  width: 32px;
+  height: 12px;
+  margin-left: 5px;
+}
+
+#boidColorPicker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+#boidColorPicker::-webkit-color-swatch {
+  border-style: inset;
 }
 #credit {
     margin-top: 5px;
     margin-bottom: 20px;
-}
-
-#boidColorPicker {
-  -webkit-appearance: none;
-	border: none;
-	width: 32px;
-	height: 12px;
-  margin-left: 5px;
-}
-#boidColorPicker::-webkit-color-swatch-wrapper {
-	padding: 0;
-}
-#boidColorPicker::-webkit-color-swatch {
-	border-style: inset;
 }

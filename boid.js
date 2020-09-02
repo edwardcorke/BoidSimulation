@@ -2,12 +2,12 @@ class Boid {
   constructor(positionX, positionY) {
     this.position = createVector(positionX, positionY);
     this.velocity = p5.Vector.random2D();
-    this.velocity.setMag(random(2, 4))
+    this.velocity.setMag(random(2, 4));
     this.acceleration = createVector();
-    this.noise = createVector(0,0);
+    this.noise = createVector(0,0); // default off
     this.maxForce = 1;
     this.maxSpeed = 4;
-    this.color = "#FFFFFF";
+    this.color = "#FFFFFF"; // default white
     this.size = 15;
 
     this.alignPerceptionRadius = defaultAlignPerceptionRadius;
@@ -16,8 +16,8 @@ class Boid {
     this.avoidObstaclePerceptionRadius = 100;
   }
 
+  // Infinity Edge Effect
   edges() {
-    // Infinity edge effect
     if (this.position.x > width) {
       this.position.x = 0;
     } else if (this.position.x < 0) {
@@ -30,6 +30,7 @@ class Boid {
     }
   }
 
+  // Returns list of boids in inputted percepion radius around boid
   getLocalFlock(objects, perceptionRadius) {
     let localFlock = [];
     for (let other of objects) {
@@ -46,6 +47,7 @@ class Boid {
     return localFlock;
   }
 
+  // Boid alignment rule
   align(boids) {
     let steering = createVector();
     let total = 0;
@@ -63,6 +65,7 @@ class Boid {
     return steering;
   }
 
+  // Boid cohesion rule
   cohesion(boids) {
     let steering = createVector();
     let total = 0;
@@ -81,6 +84,7 @@ class Boid {
     return steering;
   }
 
+  // Boid separation rule
   separation(boids) {
     let steering = createVector();
     let total = 0;
@@ -101,6 +105,7 @@ class Boid {
     return steering;
   }
 
+  // Avoid obstacles rule
   avoidObstacle(obstacles) {
     let steering = createVector();
     let total = 0;
@@ -122,6 +127,7 @@ class Boid {
     return steering;
   }
 
+  // Boid flock behaviour
   flock(boids, obstacles) {
     let alignment = this.align(boids);
     let avoidAlignment = this.avoidObstacle(obstacles);
@@ -140,6 +146,7 @@ class Boid {
     this.acceleration.add(separation);
   }
 
+  // Apply most recent movement variables to boid
   update() {
     this.position.add(this.velocity);
     this.velocity.add(this.acceleration);
@@ -155,23 +162,24 @@ class Boid {
     this.separationPerceptionRadius = separationPerceptionRadiusSlider.value();
   }
 
+  // Set movement noise of boid based on noise slider
   updateNoise() {
     this.noise = createVector(random(noiseSlider.value()) - (noiseSlider.value()/2),
                               random(noiseSlider.value()) - (noiseSlider.value()/2)
                               );
   }
 
+  // Draw boid
   show() {
     this.drawBoidArrow(this.position, this.velocity, color(this.color));
   }
 
+  // Set color of boid
   setColor(newColor) {
     this.color = newColor;
   }
 
-
-  // ###### CUT DOWN #####
-
+  // Draw the arrow of boid facing direction of acceleration
   drawBoidArrow(base, vec, myColor) {
     push(); //save current drawings
     fill(myColor);
